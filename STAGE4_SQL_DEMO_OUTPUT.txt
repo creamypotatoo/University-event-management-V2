@@ -1,0 +1,35 @@
+BEGIN
+DO
+ event_id | title | club_name | venue_name | start_time 
+----------+-------+-----------+------------+------------
+(0 rows)
+
+ event_id | title | expense_count | total_expenses | average_expense | minimum_expense | maximum_expense 
+----------+-------+---------------+----------------+-----------------+-----------------+-----------------
+(0 rows)
+
+ event_id | title | total_expenses | total_registrations | occupied | occupancy_pct 
+----------+-------+----------------+---------------------+----------+---------------
+(0 rows)
+
+ club_id | club_name | total_expenses 
+---------+-----------+----------------
+(0 rows)
+
+ event_id | title 
+----------+-------
+(0 rows)
+
+ club_id | club_name 
+---------+-----------
+(0 rows)
+
+ event_id | title | occupied 
+----------+-------+----------
+(0 rows)
+
+ month | total_expenses 
+-------+----------------
+(0 rows)
+
+COMMIT

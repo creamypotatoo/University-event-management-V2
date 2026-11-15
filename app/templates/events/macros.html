@@ -1,0 +1,1 @@
+{% macro pages(page,more) %}<nav class="d-flex gap-3" aria-label="Pagination">{% if page>1 %}<a href="{{ event_page_url(page-1) }}">Previous</a>{% endif %}<span>Page {{ page }}</span>{% if more %}<a href="{{ event_page_url(page+1) }}">Next</a>{% endif %}</nav>{% endmacro %}

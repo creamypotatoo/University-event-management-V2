@@ -1,0 +1,782 @@
+01_schema_constraints_indexes.sql
+BEGIN
+DO
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+ALTER TABLE
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+INSERT 0 3
+INSERT 0 2
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 2
+INSERT 0 2
+INSERT 0 2
+DO
+     relname      |                 conname                 | contype |                                                                    definition                                                                    
+------------------+-----------------------------------------+---------+--------------------------------------------------------------------------------------------------------------------------------------------------
+ club_admins      | fk_club_admins_club_id_clubs            | f       | FOREIGN KEY (club_id) REFERENCES clubs(club_id) ON DELETE RESTRICT
+ club_admins      | fk_club_admins_user_id_users            | f       | FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE RESTRICT
+ club_admins      | club_admins_club_admin_id_not_null      | n       | NOT NULL club_admin_id
+ club_admins      | club_admins_club_id_not_null            | n       | NOT NULL club_id
+ club_admins      | club_admins_user_id_not_null            | n       | NOT NULL user_id
+ club_admins      | pk_club_admins                          | p       | PRIMARY KEY (club_admin_id)
+ club_admins      | uq_club_admins_club_user                | u       | UNIQUE (club_id, user_id)
+ club_memberships | ck_club_memberships_valid_status        | c       | CHECK (((status)::text = ANY ((ARRAY['active'::character varying, 'cancelled'::character varying])::text[])))
+ club_memberships | fk_club_memberships_club_id_clubs       | f       | FOREIGN KEY (club_id) REFERENCES clubs(club_id) ON DELETE RESTRICT
+ club_memberships | fk_club_memberships_student_id_students | f       | FOREIGN KEY (student_id) REFERENCES students(student_id) ON DELETE RESTRICT
+ club_memberships | club_memberships_club_id_not_null       | n       | NOT NULL club_id
+ club_memberships | club_memberships_joined_at_not_null     | n       | NOT NULL joined_at
+ club_memberships | club_memberships_membership_id_not_null | n       | NOT NULL membership_id
+ club_memberships | club_memberships_status_not_null        | n       | NOT NULL status
+ club_memberships | club_memberships_student_id_not_null    | n       | NOT NULL student_id
+ club_memberships | pk_club_memberships                     | p       | PRIMARY KEY (membership_id)
+ club_memberships | uq_club_memberships_club_student        | u       | UNIQUE (club_id, student_id)
+ clubs            | ck_clubs_club_name_not_blank            | c       | CHECK ((length(TRIM(BOTH FROM club_name)) > 0))
+ clubs            | clubs_club_id_not_null                  | n       | NOT NULL club_id
+ clubs            | clubs_club_name_not_null                | n       | NOT NULL club_name
+ clubs            | clubs_created_at_not_null               | n       | NOT NULL created_at
+ clubs            | clubs_description_not_null              | n       | NOT NULL description
+ clubs            | clubs_is_active_not_null                | n       | NOT NULL is_active
+ clubs            | pk_clubs                                | p       | PRIMARY KEY (club_id)
+ clubs            | uq_clubs_club_name                      | u       | UNIQUE (club_name)
+ event_expenses   | ck_event_expenses_description_not_blank | c       | CHECK ((length(TRIM(BOTH FROM description)) > 0))
+ event_expenses   | ck_event_expenses_nonnegative_amount    | c       | CHECK ((amount >= (0)::numeric))
+ event_expenses   | fk_event_expenses_event_id_events       | f       | FOREIGN KEY (event_id) REFERENCES events(event_id) ON DELETE RESTRICT
+ event_expenses   | event_expenses_amount_not_null          | n       | NOT NULL amount
+ event_expenses   | event_expenses_description_not_null     | n       | NOT NULL description
+ event_expenses   | event_expenses_event_id_not_null        | n       | NOT NULL event_id
+ event_expenses   | event_expenses_expense_date_not_null    | n       | NOT NULL expense_date
+ event_expenses   | event_expenses_expense_id_not_null      | n       | NOT NULL expense_id
+ event_expenses   | pk_event_expenses                       | p       | PRIMARY KEY (expense_id)
+ events           | ck_events_positive_capacity             | c       | CHECK ((capacity > 0))
+ events           | ck_events_title_not_blank               | c       | CHECK ((length(TRIM(BOTH FROM title)) > 0))
+ events           | ck_events_valid_status                  | c       | CHECK (((status)::text = ANY ((ARRAY['scheduled'::character varying, 'completed'::character varying, 'cancelled'::character varying])::text[])))
+ events           | ck_events_valid_time_range              | c       | CHECK ((end_time > start_time))
+ events           | fk_events_club_id_clubs                 | f       | FOREIGN KEY (club_id) REFERENCES clubs(club_id) ON DELETE RESTRICT
+ events           | fk_events_venue_id_venues               | f       | FOREIGN KEY (venue_id) REFERENCES venues(venue_id) ON DELETE RESTRICT
+ events           | events_capacity_not_null                | n       | NOT NULL capacity
+ events           | events_club_id_not_null                 | n       | NOT NULL club_id
+ events           | events_description_not_null             | n       | NOT NULL description
+ events           | events_end_time_not_null                | n       | NOT NULL end_time
+ events           | events_event_id_not_null                | n       | NOT NULL event_id
+ events           | events_start_time_not_null              | n       | NOT NULL start_time
+ events           | events_status_not_null                  | n       | NOT NULL status
+ events           | events_title_not_null                   | n       | NOT NULL title
+ events           | events_venue_id_not_null                | n       | NOT NULL venue_id
+ events           | pk_events                               | p       | PRIMARY KEY (event_id)
+ events           | ex_events_venue_time                    | x       | EXCLUDE USING gist (venue_id WITH =, tstzrange(start_time, end_time, '[)'::text) WITH &&) WHERE (((status)::text <> 'cancelled'::text))
+ registrations    | ck_registrations_valid_status           | c       | CHECK (((status)::text = ANY ((ARRAY['registered'::character varying, 'cancelled'::character varying, 'attended'::character varying])::text[])))
+ registrations    | fk_registrations_event_id_events        | f       | FOREIGN KEY (event_id) REFERENCES events(event_id) ON DELETE RESTRICT
+ registrations    | fk_registrations_student_id_students    | f       | FOREIGN KEY (student_id) REFERENCES students(student_id) ON DELETE RESTRICT
+ registrations    | registrations_event_id_not_null         | n       | NOT NULL event_id
+ registrations    | registrations_registered_at_not_null    | n       | NOT NULL registered_at
+ registrations    | registrations_registration_id_not_null  | n       | NOT NULL registration_id
+ registrations    | registrations_status_not_null           | n       | NOT NULL status
+ registrations    | registrations_student_id_not_null       | n       | NOT NULL student_id
+ registrations    | pk_registrations                        | p       | PRIMARY KEY (registration_id)
+ registrations    | uq_registrations_event_student          | u       | UNIQUE (event_id, student_id)
+ students         | ck_students_batch_not_blank             | c       | CHECK ((length(TRIM(BOTH FROM batch)) > 0))
+ students         | ck_students_department_not_blank        | c       | CHECK ((length(TRIM(BOTH FROM department)) > 0))
+ students         | ck_students_student_number_not_blank    | c       | CHECK ((length(TRIM(BOTH FROM student_number)) > 0))
+ students         | fk_students_user_id_users               | f       | FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE RESTRICT
+ students         | students_batch_not_null                 | n       | NOT NULL batch
+ students         | students_department_not_null            | n       | NOT NULL department
+ students         | students_student_id_not_null            | n       | NOT NULL student_id
+ students         | students_student_number_not_null        | n       | NOT NULL student_number
+ students         | students_user_id_not_null               | n       | NOT NULL user_id
+ students         | pk_students                             | p       | PRIMARY KEY (student_id)
+ students         | uq_students_student_number              | u       | UNIQUE (student_number)
+ students         | uq_students_user_id                     | u       | UNIQUE (user_id)
+ users            | ck_users_full_name_not_blank            | c       | CHECK ((length(TRIM(BOTH FROM full_name)) > 0))
+ users            | ck_users_normalized_email               | c       | CHECK (((length(TRIM(BOTH FROM email)) > 0) AND ((email)::text = lower(TRIM(BOTH FROM email)))))
+ users            | ck_users_password_hash_not_blank        | c       | CHECK ((length(TRIM(BOTH FROM password_hash)) > 0))
+ users            | ck_users_valid_role                     | c       | CHECK (((role)::text = ANY ((ARRAY['student'::character varying, 'club_admin'::character varying, 'system_admin'::character varying])::text[])))
+ users            | users_email_not_null                    | n       | NOT NULL email
+ users            | users_full_name_not_null                | n       | NOT NULL full_name
+ users            | users_password_hash_not_null            | n       | NOT NULL password_hash
+ users            | users_role_not_null                     | n       | NOT NULL role
+ users            | users_user_id_not_null                  | n       | NOT NULL user_id
+ users            | pk_users                                | p       | PRIMARY KEY (user_id)
+ venues           | ck_venues_location_not_blank            | c       | CHECK ((length(TRIM(BOTH FROM location)) > 0))
+ venues           | ck_venues_positive_capacity             | c       | CHECK ((capacity > 0))
+ venues           | ck_venues_venue_name_not_blank          | c       | CHECK ((length(TRIM(BOTH FROM venue_name)) > 0))
+ venues           | venues_capacity_not_null                | n       | NOT NULL capacity
+ venues           | venues_location_not_null                | n       | NOT NULL location
+ venues           | venues_venue_id_not_null                | n       | NOT NULL venue_id
+ venues           | venues_venue_name_not_null              | n       | NOT NULL venue_name
+ venues           | pk_venues                               | p       | PRIMARY KEY (venue_id)
+ venues           | uq_venues_venue_name                    | u       | UNIQUE (venue_name)
+(92 rows)
+
+            indexname             |                                                                              indexdef                                                                              
+----------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ ex_events_venue_time             | CREATE INDEX ex_events_venue_time ON pg_temp.events USING gist (venue_id, tstzrange(start_time, end_time, '[)'::text)) WHERE ((status)::text <> 'cancelled'::text)
+ ix_club_admins_user_id           | CREATE INDEX ix_club_admins_user_id ON pg_temp.club_admins USING btree (user_id)
+ ix_club_memberships_student_id   | CREATE INDEX ix_club_memberships_student_id ON pg_temp.club_memberships USING btree (student_id)
+ ix_event_expenses_event_id       | CREATE INDEX ix_event_expenses_event_id ON pg_temp.event_expenses USING btree (event_id)
+ ix_event_expenses_expense_date   | CREATE INDEX ix_event_expenses_expense_date ON pg_temp.event_expenses USING btree (expense_date)
+ ix_events_club_id                | CREATE INDEX ix_events_club_id ON pg_temp.events USING btree (club_id)
+ ix_events_start_time             | CREATE INDEX ix_events_start_time ON pg_temp.events USING btree (start_time)
+ ix_events_status                 | CREATE INDEX ix_events_status ON pg_temp.events USING btree (status)
+ ix_events_title                  | CREATE INDEX ix_events_title ON pg_temp.events USING btree (title)
+ ix_events_venue_id               | CREATE INDEX ix_events_venue_id ON pg_temp.events USING btree (venue_id)
+ ix_registrations_event_status    | CREATE INDEX ix_registrations_event_status ON pg_temp.registrations USING btree (event_id, status)
+ ix_registrations_student_id      | CREATE INDEX ix_registrations_student_id ON pg_temp.registrations USING btree (student_id)
+ ix_students_department           | CREATE INDEX ix_students_department ON pg_temp.students USING btree (department)
+ ix_users_full_name               | CREATE INDEX ix_users_full_name ON pg_temp.users USING btree (full_name)
+ pk_club_admins                   | CREATE UNIQUE INDEX pk_club_admins ON pg_temp.club_admins USING btree (club_admin_id)
+ pk_club_memberships              | CREATE UNIQUE INDEX pk_club_memberships ON pg_temp.club_memberships USING btree (membership_id)
+ pk_clubs                         | CREATE UNIQUE INDEX pk_clubs ON pg_temp.clubs USING btree (club_id)
+ pk_event_expenses                | CREATE UNIQUE INDEX pk_event_expenses ON pg_temp.event_expenses USING btree (expense_id)
+ pk_events                        | CREATE UNIQUE INDEX pk_events ON pg_temp.events USING btree (event_id)
+ pk_registrations                 | CREATE UNIQUE INDEX pk_registrations ON pg_temp.registrations USING btree (registration_id)
+ pk_students                      | CREATE UNIQUE INDEX pk_students ON pg_temp.students USING btree (student_id)
+ pk_users                         | CREATE UNIQUE INDEX pk_users ON pg_temp.users USING btree (user_id)
+ pk_venues                        | CREATE UNIQUE INDEX pk_venues ON pg_temp.venues USING btree (venue_id)
+ uq_club_admins_club_user         | CREATE UNIQUE INDEX uq_club_admins_club_user ON pg_temp.club_admins USING btree (club_id, user_id)
+ uq_club_memberships_club_student | CREATE UNIQUE INDEX uq_club_memberships_club_student ON pg_temp.club_memberships USING btree (club_id, student_id)
+ uq_clubs_club_name               | CREATE UNIQUE INDEX uq_clubs_club_name ON pg_temp.clubs USING btree (club_name)
+ uq_registrations_event_student   | CREATE UNIQUE INDEX uq_registrations_event_student ON pg_temp.registrations USING btree (event_id, student_id)
+ uq_students_student_number       | CREATE UNIQUE INDEX uq_students_student_number ON pg_temp.students USING btree (student_number)
+ uq_students_user_id              | CREATE UNIQUE INDEX uq_students_user_id ON pg_temp.students USING btree (user_id)
+ uq_users_email                   | CREATE UNIQUE INDEX uq_users_email ON pg_temp.users USING btree (email)
+ uq_venues_venue_name             | CREATE UNIQUE INDEX uq_venues_venue_name ON pg_temp.venues USING btree (venue_name)
+(31 rows)
+
+ROLLBACK
+
+psql:D:/dbms_project_raw_sql/sql/demo/01_schema_constraints_indexes.sql:149: NOTICE:  PASS: positive venue capacity CHECK
+psql:D:/dbms_project_raw_sql/sql/demo/01_schema_constraints_indexes.sql:149: NOTICE:  PASS: normalized unique email
+psql:D:/dbms_project_raw_sql/sql/demo/01_schema_constraints_indexes.sql:149: NOTICE:  PASS: student user FOREIGN KEY
+psql:D:/dbms_project_raw_sql/sql/demo/01_schema_constraints_indexes.sql:149: NOTICE:  PASS: event/student lifetime UNIQUE
+psql:D:/dbms_project_raw_sql/sql/demo/01_schema_constraints_indexes.sql:149: NOTICE:  PASS: nonnegative exact amount CHECK
+psql:D:/dbms_project_raw_sql/sql/demo/01_schema_constraints_indexes.sql:149: NOTICE:  PASS: GiST venue-overlap exclusion
+
+02_crud_transactions.sql
+BEGIN
+DO
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+ALTER TABLE
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+INSERT 0 3
+INSERT 0 2
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 2
+INSERT 0 2
+INSERT 0 2
+          full_name           |        email        |  role   
+------------------------------+---------------------+---------
+ Demo Student One (Fictional) | one@example.invalid | student
+ Demo Student Two (Fictional) | two@example.invalid | student
+(2 rows)
+
+INSERT 0 1
+UPDATE 1
+ expense_id |      description      | amount 
+------------+-----------------------+--------
+          1 | Temporary supplies    |  10.10
+          2 | Temporary handouts    |  20.20
+          3 | Temporary new expense |   6.60
+(3 rows)
+
+SAVEPOINT
+DELETE 1
+ after_delete_should_be_2 
+--------------------------
+                        2
+(1 row)
+
+ROLLBACK
+ after_rollback_should_be_3 
+----------------------------
+                          3
+(1 row)
+
+COMMIT
+ temporary_tables_removed 
+--------------------------
+ t
+(1 row)
+
+BEGIN
+CREATE TABLE
+INSERT 0 1
+ROLLBACK
+ rollback_removed_probe 
+------------------------
+ t
+(1 row)
+
+
+
+03_joins_aggregates_temp_views.sql
+BEGIN
+DO
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+ALTER TABLE
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+INSERT 0 3
+INSERT 0 2
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 2
+INSERT 0 2
+INSERT 0 2
+ event_id |            title             |        club_name        |   venue_name   |       start_time       
+----------+------------------------------+-------------------------+----------------+------------------------
+        1 | Temporary completed workshop | Temporary Robotics Club | Temporary Hall | 2020-01-01 10:00:00+06
+        2 | Temporary upcoming seminar   | Temporary Robotics Club | Temporary Hall | 2040-01-01 10:00:00+06
+(2 rows)
+
+ event_id |            title             | expense_count | total_expenses |   average_expense   | minimum_expense | maximum_expense 
+----------+------------------------------+---------------+----------------+---------------------+-----------------+-----------------
+        1 | Temporary completed workshop |             2 |          30.30 | 15.1500000000000000 |           10.10 |           20.20
+        2 | Temporary upcoming seminar   |             0 |              0 |                     |                 |                
+(2 rows)
+
+ event_id |            title             | total_expenses | total_registrations | occupied | occupancy_pct 
+----------+------------------------------+----------------+---------------------+----------+---------------
+        1 | Temporary completed workshop |          30.30 |                   2 |        2 |         100.0
+        2 | Temporary upcoming seminar   |              0 |                   0 |        0 |           0.0
+(2 rows)
+
+ club_id |        club_name        | total_expenses 
+---------+-------------------------+----------------
+       1 | Temporary Robotics Club |          30.30
+(1 row)
+
+ event_id |           title            
+----------+----------------------------
+        2 | Temporary upcoming seminar
+(1 row)
+
+ club_id |        club_name        
+---------+-------------------------
+       1 | Temporary Robotics Club
+(1 row)
+
+ event_id |            title             | occupied 
+----------+------------------------------+----------
+        1 | Temporary completed workshop |        2
+        2 | Temporary upcoming seminar   |        0
+(2 rows)
+
+   month    | total_expenses 
+------------+----------------
+ 2020-01-01 |          30.30
+(1 row)
+
+CREATE VIEW
+CREATE VIEW
+CREATE VIEW
+ event_id | total_expenses 
+----------+----------------
+        1 |          30.30
+        2 |              0
+(2 rows)
+
+ event_id | total_registrations | occupied | occupancy_pct | attendance_rate 
+----------+---------------------+----------+---------------+-----------------
+        1 |                   2 |        2 |         100.0 |            50.0
+        2 |                   0 |        0 |           0.0 |                
+(2 rows)
+
+ club_id |        club_name        | is_active | event_count | total_registrations | occupied | attended | total_expenses 
+---------+-------------------------+-----------+-------------+---------------------+----------+----------+----------------
+       1 | Temporary Robotics Club | t         |           2 |                   2 |        2 |        1 |          30.30
+(1 row)
+
+ROLLBACK
+
+
+04_row_locks.sql
+BEGIN
+DO
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+ALTER TABLE
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+INSERT 0 3
+INSERT 0 2
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 2
+INSERT 0 2
+INSERT 0 2
+ club_id | is_active 
+---------+-----------
+       1 | t
+(1 row)
+
+ event_id | capacity |  status   
+----------+----------+-----------
+        2 |        3 | scheduled
+(1 row)
+
+ occupied 
+----------
+        0
+(1 row)
+
+ registration_id | status 
+-----------------+--------
+(0 rows)
+
+   locktype    |         mode          | granted 
+---------------+-----------------------+---------
+ relation      | AccessExclusiveLock   | t
+ relation      | AccessExclusiveLock   | t
+ relation      | AccessExclusiveLock   | t
+ relation      | AccessExclusiveLock   | t
+ relation      | AccessExclusiveLock   | t
+ relation      | AccessExclusiveLock   | t
+ relation      | AccessExclusiveLock   | t
+ relation      | AccessExclusiveLock   | t
+ relation      | AccessExclusiveLock   | t
+ relation      | AccessExclusiveLock   | t
+ relation      | AccessExclusiveLock   | t
+ relation      | AccessExclusiveLock   | t
+ relation      | AccessExclusiveLock   | t
+ relation      | AccessExclusiveLock   | t
+ relation      | AccessExclusiveLock   | t
+ relation      | AccessExclusiveLock   | t
+ relation      | AccessExclusiveLock   | t
+ relation      | AccessExclusiveLock   | t
+ relation      | AccessExclusiveLock   | t
+ relation      | AccessExclusiveLock   | t
+ relation      | AccessExclusiveLock   | t
+ relation      | AccessExclusiveLock   | t
+ relation      | AccessExclusiveLock   | t
+ relation      | AccessExclusiveLock   | t
+ relation      | AccessExclusiveLock   | t
+ relation      | AccessExclusiveLock   | t
+ relation      | AccessExclusiveLock   | t
+ relation      | AccessExclusiveLock   | t
+ relation      | AccessExclusiveLock   | t
+ relation      | AccessExclusiveLock   | t
+ relation      | AccessExclusiveLock   | t
+ relation      | AccessExclusiveLock   | t
+ relation      | AccessExclusiveLock   | t
+ relation      | AccessExclusiveLock   | t
+ relation      | AccessExclusiveLock   | t
+ relation      | AccessExclusiveLock   | t
+ relation      | AccessExclusiveLock   | t
+ relation      | AccessExclusiveLock   | t
+ relation      | AccessExclusiveLock   | t
+ relation      | AccessExclusiveLock   | t
+ relation      | AccessExclusiveLock   | t
+ relation      | AccessExclusiveLock   | t
+ relation      | AccessExclusiveLock   | t
+ relation      | AccessExclusiveLock   | t
+ relation      | AccessExclusiveLock   | t
+ relation      | AccessExclusiveLock   | t
+ relation      | AccessExclusiveLock   | t
+ relation      | AccessExclusiveLock   | t
+ relation      | AccessExclusiveLock   | t
+ relation      | AccessExclusiveLock   | t
+ relation      | AccessExclusiveLock   | t
+ relation      | AccessExclusiveLock   | t
+ relation      | AccessExclusiveLock   | t
+ relation      | AccessExclusiveLock   | t
+ relation      | AccessExclusiveLock   | t
+ relation      | AccessShareLock       | t
+ relation      | AccessShareLock       | t
+ relation      | AccessShareLock       | t
+ relation      | AccessShareLock       | t
+ relation      | AccessShareLock       | t
+ relation      | AccessShareLock       | t
+ relation      | AccessShareLock       | t
+ relation      | AccessShareLock       | t
+ relation      | AccessShareLock       | t
+ relation      | AccessShareLock       | t
+ relation      | AccessShareLock       | t
+ relation      | AccessShareLock       | t
+ relation      | AccessShareLock       | t
+ relation      | AccessShareLock       | t
+ transactionid | ExclusiveLock         | t
+ relation      | RowExclusiveLock      | t
+ relation      | RowExclusiveLock      | t
+ relation      | RowExclusiveLock      | t
+ relation      | RowExclusiveLock      | t
+ relation      | RowExclusiveLock      | t
+ relation      | RowExclusiveLock      | t
+ relation      | RowExclusiveLock      | t
+ relation      | RowExclusiveLock      | t
+ relation      | RowExclusiveLock      | t
+ relation      | RowExclusiveLock      | t
+ relation      | RowExclusiveLock      | t
+ relation      | RowExclusiveLock      | t
+ relation      | RowExclusiveLock      | t
+ relation      | RowExclusiveLock      | t
+ relation      | RowExclusiveLock      | t
+ relation      | RowExclusiveLock      | t
+ relation      | RowExclusiveLock      | t
+ relation      | RowExclusiveLock      | t
+ relation      | RowShareLock          | t
+ relation      | RowShareLock          | t
+ relation      | RowShareLock          | t
+ relation      | RowShareLock          | t
+ relation      | RowShareLock          | t
+ relation      | RowShareLock          | t
+ relation      | RowShareLock          | t
+ relation      | RowShareLock          | t
+ relation      | RowShareLock          | t
+ relation      | RowShareLock          | t
+ relation      | RowShareLock          | t
+ relation      | RowShareLock          | t
+ relation      | RowShareLock          | t
+ relation      | RowShareLock          | t
+ relation      | RowShareLock          | t
+ relation      | RowShareLock          | t
+ relation      | RowShareLock          | t
+ relation      | RowShareLock          | t
+ relation      | RowShareLock          | t
+ relation      | RowShareLock          | t
+ relation      | RowShareLock          | t
+ relation      | RowShareLock          | t
+ relation      | RowShareLock          | t
+ relation      | RowShareLock          | t
+ relation      | RowShareLock          | t
+ relation      | RowShareLock          | t
+ relation      | RowShareLock          | t
+ relation      | RowShareLock          | t
+ relation      | ShareLock             | t
+ relation      | ShareLock             | t
+ relation      | ShareLock             | t
+ relation      | ShareLock             | t
+ relation      | ShareLock             | t
+ relation      | ShareLock             | t
+ relation      | ShareLock             | t
+ relation      | ShareLock             | t
+ relation      | ShareLock             | t
+ relation      | ShareLock             | t
+ relation      | ShareLock             | t
+ relation      | ShareLock             | t
+ relation      | ShareRowExclusiveLock | t
+ relation      | ShareRowExclusiveLock | t
+ relation      | ShareRowExclusiveLock | t
+ relation      | ShareRowExclusiveLock | t
+ relation      | ShareRowExclusiveLock | t
+ relation      | ShareRowExclusiveLock | t
+ relation      | ShareRowExclusiveLock | t
+ relation      | ShareRowExclusiveLock | t
+ relation      | ShareRowExclusiveLock | t
+ relation      | ShareRowExclusiveLock | t
+ relation      | ShareRowExclusiveLock | t
+ relation      | ShareRowExclusiveLock | t
+ relation      | ShareRowExclusiveLock | t
+ relation      | ShareRowExclusiveLock | t
+ relation      | ShareRowExclusiveLock | t
+ relation      | ShareRowExclusiveLock | t
+ relation      | ShareRowExclusiveLock | t
+ relation      | ShareRowExclusiveLock | t
+(146 rows)
+
+ROLLBACK
+
+
+05_live_catalog_read_only.sql
+BEGIN
+DO
+    table_name    
+------------------
+ club_admins
+ club_memberships
+ clubs
+ event_expenses
+ events
+ registrations
+ students
+ users
+ venues
+(9 rows)
+
+     relname      |                 conname                 | contype |                                                                    definition                                                                    
+------------------+-----------------------------------------+---------+--------------------------------------------------------------------------------------------------------------------------------------------------
+ club_admins      | fk_club_admins_club_id_clubs            | f       | FOREIGN KEY (club_id) REFERENCES clubs(club_id) ON DELETE RESTRICT
+ club_admins      | fk_club_admins_user_id_users            | f       | FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE RESTRICT
+ club_admins      | club_admins_club_admin_id_not_null      | n       | NOT NULL club_admin_id
+ club_admins      | club_admins_club_id_not_null            | n       | NOT NULL club_id
+ club_admins      | club_admins_user_id_not_null            | n       | NOT NULL user_id
+ club_admins      | pk_club_admins                          | p       | PRIMARY KEY (club_admin_id)
+ club_admins      | uq_club_admins_club_user                | u       | UNIQUE (club_id, user_id)
+ club_memberships | ck_club_memberships_valid_status        | c       | CHECK (((status)::text = ANY ((ARRAY['active'::character varying, 'cancelled'::character varying])::text[])))
+ club_memberships | fk_club_memberships_club_id_clubs       | f       | FOREIGN KEY (club_id) REFERENCES clubs(club_id) ON DELETE RESTRICT
+ club_memberships | fk_club_memberships_student_id_students | f       | FOREIGN KEY (student_id) REFERENCES students(student_id) ON DELETE RESTRICT
+ club_memberships | club_memberships_club_id_not_null       | n       | NOT NULL club_id
+ club_memberships | club_memberships_joined_at_not_null     | n       | NOT NULL joined_at
+ club_memberships | club_memberships_membership_id_not_null | n       | NOT NULL membership_id
+ club_memberships | club_memberships_status_not_null        | n       | NOT NULL status
+ club_memberships | club_memberships_student_id_not_null    | n       | NOT NULL student_id
+ club_memberships | pk_club_memberships                     | p       | PRIMARY KEY (membership_id)
+ club_memberships | uq_club_memberships_club_student        | u       | UNIQUE (club_id, student_id)
+ clubs            | ck_clubs_club_name_not_blank            | c       | CHECK ((length(TRIM(BOTH FROM club_name)) > 0))
+ clubs            | clubs_club_id_not_null                  | n       | NOT NULL club_id
+ clubs            | clubs_club_name_not_null                | n       | NOT NULL club_name
+ clubs            | clubs_created_at_not_null               | n       | NOT NULL created_at
+ clubs            | clubs_description_not_null              | n       | NOT NULL description
+ clubs            | clubs_is_active_not_null                | n       | NOT NULL is_active
+ clubs            | pk_clubs                                | p       | PRIMARY KEY (club_id)
+ clubs            | uq_clubs_club_name                      | u       | UNIQUE (club_name)
+ event_expenses   | ck_event_expenses_description_not_blank | c       | CHECK ((length(TRIM(BOTH FROM description)) > 0))
+ event_expenses   | ck_event_expenses_nonnegative_amount    | c       | CHECK ((amount >= (0)::numeric))
+ event_expenses   | fk_event_expenses_event_id_events       | f       | FOREIGN KEY (event_id) REFERENCES events(event_id) ON DELETE RESTRICT
+ event_expenses   | event_expenses_amount_not_null          | n       | NOT NULL amount
+ event_expenses   | event_expenses_description_not_null     | n       | NOT NULL description
+ event_expenses   | event_expenses_event_id_not_null        | n       | NOT NULL event_id
+ event_expenses   | event_expenses_expense_date_not_null    | n       | NOT NULL expense_date
+ event_expenses   | event_expenses_expense_id_not_null      | n       | NOT NULL expense_id
+ event_expenses   | pk_event_expenses                       | p       | PRIMARY KEY (expense_id)
+ events           | ck_events_positive_capacity             | c       | CHECK ((capacity > 0))
+ events           | ck_events_title_not_blank               | c       | CHECK ((length(TRIM(BOTH FROM title)) > 0))
+ events           | ck_events_valid_status                  | c       | CHECK (((status)::text = ANY ((ARRAY['scheduled'::character varying, 'completed'::character varying, 'cancelled'::character varying])::text[])))
+ events           | ck_events_valid_time_range              | c       | CHECK ((end_time > start_time))
+ events           | fk_events_club_id_clubs                 | f       | FOREIGN KEY (club_id) REFERENCES clubs(club_id) ON DELETE RESTRICT
+ events           | fk_events_venue_id_venues               | f       | FOREIGN KEY (venue_id) REFERENCES venues(venue_id) ON DELETE RESTRICT
+ events           | events_capacity_not_null                | n       | NOT NULL capacity
+ events           | events_club_id_not_null                 | n       | NOT NULL club_id
+ events           | events_description_not_null             | n       | NOT NULL description
+ events           | events_end_time_not_null                | n       | NOT NULL end_time
+ events           | events_event_id_not_null                | n       | NOT NULL event_id
+ events           | events_start_time_not_null              | n       | NOT NULL start_time
+ events           | events_status_not_null                  | n       | NOT NULL status
+ events           | events_title_not_null                   | n       | NOT NULL title
+ events           | events_venue_id_not_null                | n       | NOT NULL venue_id
+ events           | pk_events                               | p       | PRIMARY KEY (event_id)
+ events           | ex_events_venue_time                    | x       | EXCLUDE USING gist (venue_id WITH =, tstzrange(start_time, end_time, '[)'::text) WITH &&) WHERE (((status)::text <> 'cancelled'::text))
+ registrations    | ck_registrations_valid_status           | c       | CHECK (((status)::text = ANY ((ARRAY['registered'::character varying, 'cancelled'::character varying, 'attended'::character varying])::text[])))
+ registrations    | fk_registrations_event_id_events        | f       | FOREIGN KEY (event_id) REFERENCES events(event_id) ON DELETE RESTRICT
+ registrations    | fk_registrations_student_id_students    | f       | FOREIGN KEY (student_id) REFERENCES students(student_id) ON DELETE RESTRICT
+ registrations    | registrations_event_id_not_null         | n       | NOT NULL event_id
+ registrations    | registrations_registered_at_not_null    | n       | NOT NULL registered_at
+ registrations    | registrations_registration_id_not_null  | n       | NOT NULL registration_id
+ registrations    | registrations_status_not_null           | n       | NOT NULL status
+ registrations    | registrations_student_id_not_null       | n       | NOT NULL student_id
+ registrations    | pk_registrations                        | p       | PRIMARY KEY (registration_id)
+ registrations    | uq_registrations_event_student          | u       | UNIQUE (event_id, student_id)
+ students         | ck_students_batch_not_blank             | c       | CHECK ((length(TRIM(BOTH FROM batch)) > 0))
+ students         | ck_students_department_not_blank        | c       | CHECK ((length(TRIM(BOTH FROM department)) > 0))
+ students         | ck_students_student_number_not_blank    | c       | CHECK ((length(TRIM(BOTH FROM student_number)) > 0))
+ students         | fk_students_user_id_users               | f       | FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE RESTRICT
+ students         | students_batch_not_null                 | n       | NOT NULL batch
+ students         | students_department_not_null            | n       | NOT NULL department
+ students         | students_student_id_not_null            | n       | NOT NULL student_id
+ students         | students_student_number_not_null        | n       | NOT NULL student_number
+ students         | students_user_id_not_null               | n       | NOT NULL user_id
+ students         | pk_students                             | p       | PRIMARY KEY (student_id)
+ students         | uq_students_student_number              | u       | UNIQUE (student_number)
+ students         | uq_students_user_id                     | u       | UNIQUE (user_id)
+ users            | ck_users_full_name_not_blank            | c       | CHECK ((length(TRIM(BOTH FROM full_name)) > 0))
+ users            | ck_users_normalized_email               | c       | CHECK (((length(TRIM(BOTH FROM email)) > 0) AND ((email)::text = lower(TRIM(BOTH FROM email)))))
+ users            | ck_users_password_hash_not_blank        | c       | CHECK ((length(TRIM(BOTH FROM password_hash)) > 0))
+ users            | ck_users_valid_role                     | c       | CHECK (((role)::text = ANY ((ARRAY['student'::character varying, 'club_admin'::character varying, 'system_admin'::character varying])::text[])))
+ users            | users_email_not_null                    | n       | NOT NULL email
+ users            | users_full_name_not_null                | n       | NOT NULL full_name
+ users            | users_password_hash_not_null            | n       | NOT NULL password_hash
+ users            | users_role_not_null                     | n       | NOT NULL role
+ users            | users_user_id_not_null                  | n       | NOT NULL user_id
+ users            | pk_users                                | p       | PRIMARY KEY (user_id)
+ venues           | ck_venues_location_not_blank            | c       | CHECK ((length(TRIM(BOTH FROM location)) > 0))
+ venues           | ck_venues_positive_capacity             | c       | CHECK ((capacity > 0))
+ venues           | ck_venues_venue_name_not_blank          | c       | CHECK ((length(TRIM(BOTH FROM venue_name)) > 0))
+ venues           | venues_capacity_not_null                | n       | NOT NULL capacity
+ venues           | venues_location_not_null                | n       | NOT NULL location
+ venues           | venues_venue_id_not_null                | n       | NOT NULL venue_id
+ venues           | venues_venue_name_not_null              | n       | NOT NULL venue_name
+ venues           | pk_venues                               | p       | PRIMARY KEY (venue_id)
+ venues           | uq_venues_venue_name                    | u       | UNIQUE (venue_name)
+(92 rows)
+
+    tablename     |            indexname             |                                                                             indexdef                                                                              
+------------------+----------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ club_admins      | ix_club_admins_user_id           | CREATE INDEX ix_club_admins_user_id ON public.club_admins USING btree (user_id)
+ club_admins      | pk_club_admins                   | CREATE UNIQUE INDEX pk_club_admins ON public.club_admins USING btree (club_admin_id)
+ club_admins      | uq_club_admins_club_user         | CREATE UNIQUE INDEX uq_club_admins_club_user ON public.club_admins USING btree (club_id, user_id)
+ club_memberships | ix_club_memberships_student_id   | CREATE INDEX ix_club_memberships_student_id ON public.club_memberships USING btree (student_id)
+ club_memberships | pk_club_memberships              | CREATE UNIQUE INDEX pk_club_memberships ON public.club_memberships USING btree (membership_id)
+ club_memberships | uq_club_memberships_club_student | CREATE UNIQUE INDEX uq_club_memberships_club_student ON public.club_memberships USING btree (club_id, student_id)
+ clubs            | pk_clubs                         | CREATE UNIQUE INDEX pk_clubs ON public.clubs USING btree (club_id)
+ clubs            | uq_clubs_club_name               | CREATE UNIQUE INDEX uq_clubs_club_name ON public.clubs USING btree (club_name)
+ event_expenses   | ix_event_expenses_event_id       | CREATE INDEX ix_event_expenses_event_id ON public.event_expenses USING btree (event_id)
+ event_expenses   | ix_event_expenses_expense_date   | CREATE INDEX ix_event_expenses_expense_date ON public.event_expenses USING btree (expense_date)
+ event_expenses   | pk_event_expenses                | CREATE UNIQUE INDEX pk_event_expenses ON public.event_expenses USING btree (expense_id)
+ events           | ex_events_venue_time             | CREATE INDEX ex_events_venue_time ON public.events USING gist (venue_id, tstzrange(start_time, end_time, '[)'::text)) WHERE ((status)::text <> 'cancelled'::text)
+ events           | ix_events_club_id                | CREATE INDEX ix_events_club_id ON public.events USING btree (club_id)
+ events           | ix_events_start_time             | CREATE INDEX ix_events_start_time ON public.events USING btree (start_time)
+ events           | ix_events_status                 | CREATE INDEX ix_events_status ON public.events USING btree (status)
+ events           | ix_events_title                  | CREATE INDEX ix_events_title ON public.events USING btree (title)
+ events           | ix_events_venue_id               | CREATE INDEX ix_events_venue_id ON public.events USING btree (venue_id)
+ events           | pk_events                        | CREATE UNIQUE INDEX pk_events ON public.events USING btree (event_id)
+ registrations    | ix_registrations_event_status    | CREATE INDEX ix_registrations_event_status ON public.registrations USING btree (event_id, status)
+ registrations    | ix_registrations_student_id      | CREATE INDEX ix_registrations_student_id ON public.registrations USING btree (student_id)
+ registrations    | pk_registrations                 | CREATE UNIQUE INDEX pk_registrations ON public.registrations USING btree (registration_id)
+ registrations    | uq_registrations_event_student   | CREATE UNIQUE INDEX uq_registrations_event_student ON public.registrations USING btree (event_id, student_id)
+ students         | ix_students_department           | CREATE INDEX ix_students_department ON public.students USING btree (department)
+ students         | pk_students                      | CREATE UNIQUE INDEX pk_students ON public.students USING btree (student_id)
+ students         | uq_students_student_number       | CREATE UNIQUE INDEX uq_students_student_number ON public.students USING btree (student_number)
+ students         | uq_students_user_id              | CREATE UNIQUE INDEX uq_students_user_id ON public.students USING btree (user_id)
+ users            | ix_users_full_name               | CREATE INDEX ix_users_full_name ON public.users USING btree (full_name)
+ users            | pk_users                         | CREATE UNIQUE INDEX pk_users ON public.users USING btree (user_id)
+ users            | uq_users_email                   | CREATE UNIQUE INDEX uq_users_email ON public.users USING btree (email)
+ venues           | pk_venues                        | CREATE UNIQUE INDEX pk_venues ON public.venues USING btree (venue_id)
+ venues           | uq_venues_venue_name             | CREATE UNIQUE INDEX uq_venues_venue_name ON public.venues USING btree (venue_name)
+(31 rows)
+
+              viewname              |                                                                                                                                                                       definition                                                                                                                                                                       
+------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ stage4_club_activity_summary       |  WITH participation AS (                                                                                                                                                                                                                                                                                                                              +
+                                    |          SELECT stage4_event_participation_summary.club_id,                                                                                                                                                                                                                                                                                           +
+                                    |             count(*) AS event_count,                                                                                                                                                                                                                                                                                                                  +
+                                    |             sum(stage4_event_participation_summary.total_registrations) AS total_registrations,                                                                                                                                                                                                                                                       +
+                                    |             sum(stage4_event_participation_summary.occupied) AS occupied,                                                                                                                                                                                                                                                                             +
+                                    |             sum(stage4_event_participation_summary.attended) AS attended                                                                                                                                                                                                                                                                              +
+                                    |            FROM stage4_event_participation_summary                                                                                                                                                                                                                                                                                                    +
+                                    |           GROUP BY stage4_event_participation_summary.club_id                                                                                                                                                                                                                                                                                         +
+                                    |         ), finance AS (                                                                                                                                                                                                                                                                                                                               +
+                                    |          SELECT stage4_event_financial_summary.club_id,                                                                                                                                                                                                                                                                                               +
+                                    |             sum(stage4_event_financial_summary.total_expenses) AS total_expenses                                                                                                                                                                                                                                                                      +
+                                    |            FROM stage4_event_financial_summary                                                                                                                                                                                                                                                                                                        +
+                                    |           GROUP BY stage4_event_financial_summary.club_id                                                                                                                                                                                                                                                                                             +
+                                    |         )                                                                                                                                                                                                                                                                                                                                             +
+                                    |  SELECT c.club_id,                                                                                                                                                                                                                                                                                                                                    +
+                                    |     c.club_name,                                                                                                                                                                                                                                                                                                                                      +
+                                    |     c.is_active,                                                                                                                                                                                                                                                                                                                                      +
+                                    |     COALESCE(p.event_count, (0)::bigint) AS event_count,                                                                                                                                                                                                                                                                                              +
+                                    |     COALESCE(p.total_registrations, (0)::numeric) AS total_registrations,                                                                                                                                                                                                                                                                             +
+                                    |     COALESCE(p.occupied, (0)::numeric) AS occupied,                                                                                                                                                                                                                                                                                                   +
+                                    |     COALESCE(p.attended, (0)::numeric) AS attended,                                                                                                                                                                                                                                                                                                   +
+                                    |     COALESCE(f.total_expenses, (0)::numeric) AS total_expenses                                                                                                                                                                                                                                                                                        +
+                                    |    FROM ((clubs c                                                                                                                                                                                                                                                                                                                                     +
+                                    |      LEFT JOIN participation p ON ((p.club_id = c.club_id)))                                                                                                                                                                                                                                                                                          +
+                                    |      LEFT JOIN finance f ON ((f.club_id = c.club_id)));
+ stage4_event_financial_summary     |  SELECT e.event_id,                                                                                                                                                                                                                                                                                                                                   +
+                                    |     e.club_id,                                                                                                                                                                                                                                                                                                                                        +
+                                    |     e.title,                                                                                                                                                                                                                                                                                                                                          +
+                                    |     count(x.expense_id) AS expense_count,                                                                                                                                                                                                                                                                                                             +
+                                    |     COALESCE(sum(x.amount), (0)::numeric) AS total_expenses,                                                                                                                                                                                                                                                                                          +
+                                    |     avg(x.amount) AS average_expense,                                                                                                                                                                                                                                                                                                                 +
+                                    |     min(x.amount) AS minimum_expense,                                                                                                                                                                                                                                                                                                                 +
+                                    |     max(x.amount) AS maximum_expense                                                                                                                                                                                                                                                                                                                  +
+                                    |    FROM (events e                                                                                                                                                                                                                                                                                                                                     +
+                                    |      LEFT JOIN event_expenses x ON ((x.event_id = e.event_id)))                                                                                                                                                                                                                                                                                       +
+                                    |   GROUP BY e.event_id;
+ stage4_event_participation_summary |  SELECT e.event_id,                                                                                                                                                                                                                                                                                                                                   +
+                                    |     e.club_id,                                                                                                                                                                                                                                                                                                                                        +
+                                    |     e.title,                                                                                                                                                                                                                                                                                                                                          +
+                                    |     e.status,                                                                                                                                                                                                                                                                                                                                         +
+                                    |     e.start_time,                                                                                                                                                                                                                                                                                                                                     +
+                                    |     e.capacity,                                                                                                                                                                                                                                                                                                                                       +
+                                    |     count(r.registration_id) AS total_registrations,                                                                                                                                                                                                                                                                                                  +
+                                    |     count(r.registration_id) FILTER (WHERE ((r.status)::text = 'registered'::text)) AS active_registrations,                                                                                                                                                                                                                                          +
+                                    |     count(r.registration_id) FILTER (WHERE ((r.status)::text = 'attended'::text)) AS attended,                                                                                                                                                                                                                                                        +
+                                    |     count(r.registration_id) FILTER (WHERE ((r.status)::text = 'cancelled'::text)) AS cancelled_registrations,                                                                                                                                                                                                                                        +
+                                    |     count(r.registration_id) FILTER (WHERE ((r.status)::text = ANY ((ARRAY['registered'::character varying, 'attended'::character varying])::text[]))) AS occupied,                                                                                                                                                                                   +
+                                    |     round(((100.0 * (count(r.registration_id) FILTER (WHERE ((r.status)::text = ANY ((ARRAY['registered'::character varying, 'attended'::character varying])::text[]))))::numeric) / (e.capacity)::numeric), 1) AS occupancy_pct,                                                                                                                     +
+                                    |         CASE                                                                                                                                                                                                                                                                                                                                          +
+                                    |             WHEN ((e.status)::text = 'completed'::text) THEN round(((100.0 * (count(r.registration_id) FILTER (WHERE ((r.status)::text = 'attended'::text)))::numeric) / (NULLIF(count(r.registration_id) FILTER (WHERE ((r.status)::text = ANY ((ARRAY['registered'::character varying, 'attended'::character varying])::text[]))), 0))::numeric), 1)+
+                                    |             ELSE NULL::numeric                                                                                                                                                                                                                                                                                                                        +
+                                    |         END AS attendance_rate                                                                                                                                                                                                                                                                                                                        +
+                                    |    FROM (events e                                                                                                                                                                                                                                                                                                                                     +
+                                    |      LEFT JOIN registrations r ON ((r.event_id = e.event_id)))                                                                                                                                                                                                                                                                                        +
+                                    |   GROUP BY e.event_id;
+(3 rows)
+
+  extname   | extversion 
+------------+------------
+ btree_gist | 1.8
+(1 row)
+
+COMMIT
+
